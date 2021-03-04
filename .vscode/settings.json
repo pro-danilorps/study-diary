@@ -1,0 +1,11 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "database": "U:\\home\\danrps\\ruby-code\\cc-training\\study-diary\\study_diary.db",
+            "name": "study-diary"
+        }
+    ],
+    "sqltools.useNodeRuntime": true
+}

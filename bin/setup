@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+
+require 'sqlite3'
+
+system('bundle install')
+
+# Open a database
+db = SQLite3::Database.new "study_diary.db"
+
+# Create a database
+rows = db.execute <<-SQL
+  create table if not exists study_items (
+    id integer primary key autoincrement,
+    title text,
+    category text
+  );
+SQL
+
+# Close the database
+db.close

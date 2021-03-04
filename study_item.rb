@@ -1,10 +1,10 @@
+require 'sqlite3'
+
 class StudyItem
   attr_reader :id, :title, :category
 
-  @@study_items = []
-
-  def initialize(title:, category:)
-
+  def initialize(id:, title:, category:)
+    @id = id
     @title = title
     @category = category
 
@@ -25,13 +25,28 @@ class StudyItem
     print 'Digite a categoria do seu item de estudo: '
     category = gets.chomp
     puts "Item '#{title}' da categoria '#{category}' cadastrado com sucesso!"
-    new(title: title, category: category)
+    
+    # Open a database
+    db = SQLite3::Database.open 'study_diary.db'
+
+    # Execute inserts with parameter markers
+    db.execute("INSERT INTO study_items (title, category) 
+    VALUES ( ?, ?)", [title, category])
+
+    # Close the database
+    db.close
   end
 
   def self.all
+    @@study_items = []
+    db = SQLite3::Database.open 'study_diary.db'
+    db.execute( "select * from study_items" ) do |row|
+    new(id: row[0], title: row[1], category: row[2])
+    end
+    db.close
     @@study_items
   end
-
+  
   def self.search
     if all.empty? 
       puts 'Nenhum item encontrado' 
@@ -46,17 +61,22 @@ class StudyItem
   end
 
   def self.delete
-    if all.empty? 
+    if @@study_items.empty? 
       puts 'Nenhum item encontrado' 
     else
       puts all
       print 'Qual o id do Item de estudo você quer apagar? '
       id = gets.to_i
-      study_item = all.detect do |study_item| 
-        study_item.id == id
-      end
-      all.delete(study_item)
-    end 
+      db = SQLite3::Database.open 'study_diary.db'
+      db.execute(" delete from study_items where id = #{id}  ")
+      db.close
+    end
+      puts 'Item deletado com sucesso!'
   end
 
+  def self.show
+    all
+    puts @@study_items
+  end
+  
 end
