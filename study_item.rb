@@ -26,24 +26,22 @@ class StudyItem
     category = gets.chomp
     puts "Item '#{title}' da categoria '#{category}' cadastrado com sucesso!"
     
-    # Open a database
     db = SQLite3::Database.open 'study_diary.db'
-
-    # Execute inserts with parameter markers
     db.execute("INSERT INTO study_items (title, category) 
     VALUES ( ?, ?)", [title, category])
-
-    # Close the database
     db.close
+
   end
 
   def self.all
     @@study_items = []
+    
     db = SQLite3::Database.open 'study_diary.db'
     db.execute( "select * from study_items" ) do |row|
     new(id: row[0], title: row[1], category: row[2])
     end
     db.close
+    
     @@study_items
   end
   
@@ -61,22 +59,24 @@ class StudyItem
   end
 
   def self.delete
-    if @@study_items.empty? 
+    if all.empty? 
       puts 'Nenhum item encontrado' 
     else
       puts all
       print 'Qual o id do Item de estudo você quer apagar? '
       id = gets.to_i
-      db = SQLite3::Database.open 'study_diary.db'
-      db.execute(" delete from study_items where id = #{id}  ")
-      db.close
+      
+      if all.filter { |item| item.id == id }.empty?
+        puts 'ID inválida!'
+      else
+        
+        db = SQLite3::Database.open 'study_diary.db'
+        db.execute(" delete from study_items where id = #{id}  ")
+        db.close
+
+        puts 'Item deletado com sucesso!'        
+      end
     end
-      puts 'Item deletado com sucesso!'
   end
 
-  def self.show
-    all
-    puts @@study_items
-  end
-  
 end

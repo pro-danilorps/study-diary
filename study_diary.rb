@@ -16,7 +16,7 @@ loop do
   when REGISTER
     StudyItem.register
   when VIEW
-    StudyItem.show
+    puts StudyItem.all
     puts 'Nenhum item encontrado' if StudyItem.all.empty?
   when SEARCH
     StudyItem.search
