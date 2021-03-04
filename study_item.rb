@@ -1,20 +1,18 @@
 class StudyItem
   attr_reader :id, :title, :category
 
-  @@next_id = 1
   @@study_items = []
 
   def initialize(title:, category:)
-    @id = @@next_id
+
     @title = title
     @category = category
 
-    @@next_id += 1
     @@study_items << self
   end
 
   def include?(query)
-    title.include?(query) || category.include?(query)
+    title.downcase.include?(query.downcase) || category.downcase.include?(query.downcase)
   end
 
   def to_s
@@ -34,20 +32,31 @@ class StudyItem
     @@study_items
   end
 
-  def self.search(term)
-  end
-
-  def self.print
+  def self.search
+    if all.empty? 
+      puts 'Nenhum item encontrado' 
+    else
+      print 'Digite uma palavra para procurar: '
+      term = gets.chomp
+      found_items = all.filter do |item|
+        item.include?(term)
+      end
+      puts found_items
+    end
   end
 
   def self.delete
-    puts '==== Lista de items ===='
-    # mostrar a lista aqui
-    puts 'Qual o id do Item de estudo você quer apagar?'
-    id = gets.to_i
-    study_item = StudyItem.all.detect do |study_item| 
-      study_item.id == id
-    end
-    StudyItem.all.delete(study_item)
+    if all.empty? 
+      puts 'Nenhum item encontrado' 
+    else
+      puts all
+      print 'Qual o id do Item de estudo você quer apagar? '
+      id = gets.to_i
+      study_item = all.detect do |study_item| 
+        study_item.id == id
+      end
+      all.delete(study_item)
+    end 
   end
+
 end
